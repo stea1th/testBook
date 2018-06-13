@@ -9,31 +9,22 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-
-
-import java.util.List;
-
 @Controller
 public class MainController {
 
     @Autowired
     private BookService bookService;
 
-    /*@RequestMapping(value = "/", method = RequestMethod.GET)
-    public String showAllBooks(Model model){
-        model.addAttribute("allBooks", bookService.getAll());
-        return "bookspage";
-    }*/
+    private PageWrapper<Book> page;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String showAllBooks(Model model, Pageable pageable){
         Page<Book> books = bookService.findAll(pageable);
-        PageWrapper<Book> page = new PageWrapper<>(books, "/");
+        page = new PageWrapper<>(books, "/");
         model.addAttribute("allBooks", page.getContent());
         model.addAttribute("page", page);
         return "bookspage";
     }
-
 
     @GetMapping("new")
     public String newBook(Model model){
@@ -41,16 +32,25 @@ public class MainController {
         return "addbook";
     }
 
+    @GetMapping("read/{id}")
+    public String readBook(@PathVariable Long id, Model model){
+        Book book = bookService.getById(id);
+        book.setReadAlready(true);
+        bookService.updateBook(book);
+        //model.addAttribute("allbook", book);
+        return "redirect:/?page="+(page.getNumber()-1);
+    }
+
     @PostMapping("addbook")
-    public String saveBook(@RequestParam String title, @RequestParam String author, Model model){
-        bookService.addBook(new Book(title, author));
-        return "redirect:/";
+    public String saveBook(Book book){
+        bookService.addBook(book);
+        return "redirect:/?page="+(page.getNumber()-1);
     }
 
     @RequestMapping("delete/{id}")
     public String deleteBook(@PathVariable Long id){
         bookService.delete(id);
-        return "redirect:/";
+        return "redirect:/?page="+(page.getNumber()-1);
     }
 
     @RequestMapping("book/{id}")
@@ -60,25 +60,40 @@ public class MainController {
     }
 
     @PostMapping("book/{id}")
-    public String updateBook(@PathVariable Long id, @RequestParam String title, @RequestParam String author
-            , Model model, Pageable pageable){
+    public String updateBook(@PathVariable Long id, @RequestParam String title, @RequestParam String description,
+            @RequestParam String isbn, @RequestParam String printYear,
+             Model model, Pageable pageable){
         Book book = bookService.getById(id);
-        if(title.length()!=0)
+        int count = 0;
+        if(title.length()!=0) {
             book.setTitle(title);
-        if(author.length()!=0)
-            book.setAuthor(author);
+            count++;
+        }
+        if(description.length()!=0) {
+            book.setAuthor(description);
+            count++;
+        }
+        if(isbn.length()!=0) {
+            book.setIsbn(isbn);
+            count++;
+        }
+        if(printYear.length()!=0) {
+            book.setPrintYear(Integer.parseInt(printYear));
+            count++;
+        }
+        if(count>0)
+            book.setReadAlready(false);
         bookService.updateBook(book);
         model.addAttribute("allBooks", bookService.findAll(pageable));
-        return "redirect:/";
+        return "redirect:/?page="+(page.getNumber()-1);
     }
 
-    @PostMapping("filter")
+    @PostMapping("/filter")
     public String filter(@RequestParam String filter, Model model, Pageable pageable){
         Page<Book> books = bookService.getByName(filter, pageable);
-        PageWrapper<Book> page = new PageWrapper<>(books, "/");
-        model.addAttribute("allBooks", page.getContent());
+        page = new PageWrapper<>(books, "/");
+        model.addAttribute("allBooksX", page.getContent());
         model.addAttribute("page", page);
-        return "bookspage";
-
+        return "filterpage";
     }
 }

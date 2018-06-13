@@ -7,22 +7,45 @@
 <body>
 <th:block th:include="/_menu"></th:block>
 
-<h3>Add Book</h3>
+<div >
+    <form method="post" action="filter">
+        <input type="text" name="filter" placeholder="Введите название"/>
+        <button type="submit">Найти</button>
+    </form>
+</div>
+<hr/>
 
-<div>
+
+<div style="border: 1px solid #494dcc;padding:5px;margin-bottom:20px;">
 <form th:object="${book}" th:action="@{/addbook}" method="post">
-    <table>
-        <tr align="left">
-            <th th:width="100">Titel:</th>
-            <td><input type="text" name="title" placeholder="Введите название"/></td>
+    <table align="center">
+        <tr align="right">
+            <th th:width="50">Titel:</th>
+            <td width="50"></td>
+            <td><input type="text" required="required" placeholder="Введите название книги" th:field="*{title}"/></td>
         </tr>
-        <tr align="left">
-            <th th:width="100">Author:</th>
-            <td><input type="text" name="author" placeholder="Введите автора"/></td>
+        <tr align="right">
+            <th th:width="50">Description:</th>
+            <td width="50"></td>
+            <td><input type="text" required="required" placeholder="Введите описание книги" th:field="*{description}"/></td>
         </tr>
-        <tr align="center">
-            <td ><button type="submit">Add Book</button></td>
-            <td ><button type="reset">Cancel</button></td>
+        <tr align="right">
+            <th th:width="50">Author:</th>
+            <td width="50"></td>
+            <td><input type="text" required="required" placeholder="Введите автора книги" th:field="*{author}"/></td>
+        </tr>
+        <tr align="right">
+            <th th:width="50">ISBN:</th>
+            <td width="50"></td>
+            <td><input type="text" required="required" placeholder="Введите isbn книги" th:field="*{isbn}"/></td>
+        </tr>
+        <tr align="right">
+            <th th:width="50">PrintYear:</th>
+            <td width="50"></td>
+            <td><input type="number" required="required" placeholder="Введите год выпуска книги" th:field="*{printYear}"/></td>
+        </tr>
+        <tr align="right">
+            <td colspan="3"><button type="submit">Add Book</button></td>
         </tr>
     </table>
 </form>
