@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Books</title>
+
+    <style>
+        ul.pagination {
+            margin: 0;
+            padding: 4px;
+        }
+        ul.pagination li {
+            display: inline;
+            margin-right: 5px;
+            border: 1px solid #824345;
+            padding: 3px;
+        }
+    </style>
+</head>
+<body>
+<th:block th:include="/_menu"></th:block>
+
+<div>
+    <form method="post" action="filter">
+        <input type="text" name="filter" placeholder="Введите название"/>
+        <button type="submit">Найти</button>
+    </form>
+</div>
+<hr>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Add</th>
+        <th>Update</th>
+        <th>Delete</th>
+    </tr>
+    <tr th:each="book, rowStat :  ${allBooks}"
+        th:style="${rowStat.odd} ? 'background: #f0f0f2;' : 'background: #ffffff;'"
+        th:styleappend="${rowStat.odd} ? 'color: darkgreen;' : 'color: black;'">
+        <td th:utext="${book.getId()}"></td>
+        <td th:utext="${book.getTitle()}"></td>
+        <td th:utext="${book.getAuthor()}"></td>
+        <td th:width="100" th:align="center">
+            <form th:action="${'new'}">
+                <button type="submit">Read</button>
+            </form>
+        </td>
+        <td th:width="100" th:align="center">
+            <form th:action="${'/book/' + book.getId()}">
+                <button type="submit">Update</button>
+            </form>
+        </td>
+        <td th:width="100" th:align="center">
+            <form th:action="${'/delete/' + book.getId()}">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+</table>
+
+
+<div class="row">
+    <div class="col-sm-5">
+        <div class="pagination"><p>Страница <span class="badge"
+                                                   th:text="${page.size * (page.number - 1) + 1}"></span>
+            <span class="badge" th:text="${page.lastPage ? page.totalElements : page.size * (page.number - 1)+ page.size}"></span> из
+            <span class="badge"
+                  th:text="${page.totalElements}"></span>
+            книг</p></div>
+    </div>
+
+    <div class="col-sm-7">
+        <!-- Pagination Bar -->
+        <div th:fragment='paginationbar'>
+            <div class="text-center">
+                <ul class='pagination pagination-centered'>
+                    <li th:class="${page.firstPage}?'disabled':''">
+                        <span th:if='${page.firstPage}'>← First</span>
+                        <a th:if='${not page.firstPage}' th:href='@{${page.url}(page=0,size=${page.size})}'>←
+                            First</a>
+                    </li>
+                    <li th:class="${page.hasPreviousPage}? '' : 'disabled'">
+                        <span th:if='${not page.hasPreviousPage}'>«</span>
+                        <a th:if='${page.hasPreviousPage}'
+                           th:href='@{${page.url}(page=${page.number - 2},size=${page.size})}'
+                           title='Go to previous page'>«</a>
+                    </li>
+                    <li th:each='item : ${page.items}' th:class="${item.current}? 'active' : ''">
+                        <span th:if='${item.current}' th:text='${item.number}'>1</span>
+                        <a th:if='${not item.current}'
+                           th:href='@{${page.url}(page=${item.number - 1},size=${page.size})}'><span
+                                th:text='${item.number}'>1</span></a>
+                    </li>
+                    <li th:class="${page.hasNextPage}? '' : 'disabled'">
+                        <span th:if='${not page.hasNextPage}'>»</span>
+                        <a th:if='${page.hasNextPage}'
+                           th:href='@{${page.url}(page=${page.number},size=${page.size})}'
+                           title='Go to next page'>»</a>
+                    </li>
+                    <li th:class="${page.lastPage}? 'disabled' : ''">
+                        <span th:if='${page.lastPage}'>Last →</span>
+                        <a th:if='${not page.lastPage}'
+                           th:href='@{${page.url}(page=${page.totalPages - 1},size=${page.size})}'>Last →</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+
+</body>
+</html>
