@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Books</title>
+
+    <style>
+        ul.pagination {
+            margin: 0;
+            padding: 4px;
+        }
+        ul.pagination li {
+            display: inline;
+            margin-right: 5px;
+            border: 1px solid #824345;
+            padding: 3px;
+        }
+    </style>
+</head>
+<body>
+<th:block th:include="/_menu"></th:block>
+
+<div >
+    <form method="post" action="filter">
+        <input type="text" name="filter" placeholder="Введите название"/>
+        <button type="submit">Найти</button>
+    </form>
+</div>
+<hr>
+<div>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Author</th>
+        <th>ISBN</th>
+        <th>PrintYear</th>
+        <th>IsRead</th>
+        <th>Add</th>
+        <th>Update</th>
+        <th>Delete</th>
+    </tr>
+    <tr th:each="book, rowStat :  ${allBooksX}"
+        th:style="${rowStat.odd} ? 'background: #f0f0f2;' : 'background: #ffffff;'"
+        th:styleappend="${rowStat.odd} ? 'color: darkgreen;' : 'color: black;'">
+        <td th:utext="${book.getId()}"></td>
+        <td th:utext="${book.getTitle()}"></td>
+        <td th:utext="${book.getDescription()}"></td>
+        <td th:utext="${book.getAuthor()}"></td>
+        <td th:utext="${book.getIsbn()}"></td>
+        <td th:utext="${book.getPrintYear()}"></td>
+        <td th:utext="${book.isReadAlready()}"></td>
+        <td th:width="100" th:align="center">
+            <form th:action="${'read/' + book.getId()}">
+                <button type="submit">Read</button>
+            </form>
+        </td>
+        <td th:width="100" th:align="center">
+            <form th:action="${'/book/' + book.getId()}">
+                <button type="submit">Update</button>
+            </form>
+        </td>
+        <td th:width="100" th:align="center">
+            <form th:action="${'/delete/' + book.getId()}">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+</table>
+</div>
+
+<th:block th:include="/_pagination"></th:block>
+
+
+</body>
+</html>
