@@ -33,11 +33,10 @@ public class MainController {
     }
 
     @GetMapping("read/{id}")
-    public String readBook(@PathVariable Long id, Model model){
+    public String readBook(@PathVariable Long id){
         Book book = bookService.getById(id);
         book.setReadAlready(true);
         bookService.updateBook(book);
-        //model.addAttribute("allbook", book);
         return "redirect:/?page="+(page.getNumber()-1);
     }
 
@@ -65,19 +64,19 @@ public class MainController {
              Model model, Pageable pageable){
         Book book = bookService.getById(id);
         int count = 0;
-        if(title.length()!=0) {
+        if(title.length()!=0 && title.length() < 101) {
             book.setTitle(title);
             count++;
         }
-        if(description.length()!=0) {
+        if(description.length()!=0 && description.length() < 256) {
             book.setAuthor(description);
             count++;
         }
-        if(isbn.length()!=0) {
+        if(isbn.length()!=0 && isbn.length() < 21) {
             book.setIsbn(isbn);
             count++;
         }
-        if(printYear.length()!=0) {
+        if(printYear.length()!=0 && printYear.length() < 5) {
             book.setPrintYear(Integer.parseInt(printYear));
             count++;
         }
